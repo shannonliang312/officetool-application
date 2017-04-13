@@ -7,3 +7,23 @@ body {
   /*background-color: #1F2D3D; 
   color: #C0CCDA;*/
 }
+
+  .router-box {
+    width: 90%;
+    margin-top: 80px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 50px;
+    border: 1px solid #ccc;
+  }
+
+  .router-box-header {
+    padding: 5px 10px;
+    border-bottom: 1px solid #ccd;
+    background-color: #eef1f6;
+    box-shadow: 1px 0 1px grey
+  }
+
+  .router-box-body {
+    padding: 20px 50px;
+  }
