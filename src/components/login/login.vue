@@ -1,10 +1,21 @@
 <template>
-  <div style="position: relative;width:100%">
+  <div class="login-box">
     <h1>登录</h1>
-    <input type="text" placeholder="用户名" v-model="name">
-    <input type="password" placeholder="密码" v-model="psw">
-    <button class="customer-button" @click="onLogin">登录</button>
-    <button class="customer-button" @click="onTest">测试 token</button>
+    <el-form ref="loginForm" :model="loginForm" :rules="rules">
+      <el-form-item class="input-item" prop="name">
+        <el-input v-model="loginForm.name">
+          <template slot="append"><i class="fa fa-user" aria-hidden="true"></i></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item class="input-item" prop="psw">
+        <el-input type="password" v-model="loginForm.psw" @keyup.native.enter="onLogin">
+          <template slot="append"><i class="fa fa-lock" aria-hidden="true"></i></template>
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <div class="err-message" v-if="errFlag">{{errMessage}}</div>
+    <button class="customer-button" @click="onLogin" >登录</button>
+    <!--<button class="customer-button" @click="onTest">测试 token</button>-->
   </div>
 </template>
 
@@ -16,80 +27,94 @@
     name: "login",
     data() {
       return {
-        name: "",
-        psw: ""
+        errFlag: false,
+        errMessage: "",
+        loginForm: {
+          name: "",
+          psw: ""
+        },
+        rules: {
+          name: [
+            { required: true, message: "请输入用户名", trigger: 'blur' }
+          ],
+          psw: [
+            { required: true, message: "请输入密码", trigger: 'blur' }
+          ]
+        }
       }
     },
     methods: {      
       ...mapMutations(['loginSuccess', 'setAccountInfo']),
       onLogin() {
-        // axios.post('/api/login', {
-        //   name: this.name,
-        //   psw: this.psw
-        // })
-        //   .then((res) => {
-        //     console.log(res.data);
-        //     sessionStorage.setItem("token", res.data.token);
-        //   })
-        this.loginSuccess();
-        this.setAccountInfo({
-          role: "admin",
-          id: "58ec936292d549ee047b209a",
-          name: "admin",
-          displayName: "管理员"
-        });
-      },
-      onTest() {
-        let token = sessionStorage.getItem("token");
-        
-        axios.get('/api/testtoken', {
-          headers: {
-            "x-access-token": sessionStorage.getItem("token")
+        this.$refs["loginForm"].validate((valid) => {
+          console.log(valid);
+          if(valid) {
+            axios.post('/api/login', {
+              name: this.loginForm.name,
+              psw: this.loginForm.psw
+            })
+              .then((res) => {
+                this.errMessage = "";
+                this.errFlag = false;
+                sessionStorage.setItem("token", res.data.token);
+                this.setAccountInfo(res.data.payload);
+                this.loginSuccess();
+                this.$router.push({path: '/admin/users-info'});
+              })
+              .catch((err) => {
+                if(err.response) {
+                  this.errMessage = err.response.data.message;
+                  this.errFlag = true;
+                }
+              });
           }
-        })
-          .then((res) => {
-            console.log(res.data);
-          });
-        // console.log(token);
-      }
+        });        
+      }      
     }
   }
 </script>
 <style>
-  h1 {
-    margin-top: 200px;
-    text-align: center;
-  }
-
-  input {
-    display: block;
-    outline: none;
-    color: black;
-    font-size: 2em;
-    text-align: center;
-    background-color: transparent;
-    margin-top: 30px;
+  .login-box {
+    position: relative;
+    width: 25%;
+    margin-top: 150px;
     margin-left: auto;
     margin-right: auto;
-    width: 30%;
-    border: 0;
-    border-bottom: black 1px solid; 
+    padding: 20px 10px;
+    border: 2px solid #ccc;
+    box-shadow: 0 5px 5px #ccc
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .input-item {
+    width: 80%;
+    margin: 0  auto;
+  }
+
+  .err-message {
+    color: red;
+    text-align: center;
   }
 
   .customer-button {
     display: block;
     padding: 5px 8px;
-    width: 30%;
+    width: 80%;
     margin-top: 30px;
     margin-left: auto;
     margin-right: auto;
     background-color: transparent;
     color: black;
-    border-radius: 10%;
+    border: 1px solid grey;
+    border-radius: 5px;
   }
 
   .customer-button:hover {
     cursor: pointer;
-    box-shadow: 1px 1px 1px grey
+    box-shadow: 0px 1px 4px grey
   }
 </style>
