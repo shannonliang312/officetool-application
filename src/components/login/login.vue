@@ -47,7 +47,6 @@
       ...mapMutations(['loginSuccess', 'setAccountInfo']),
       onLogin() {
         this.$refs["loginForm"].validate((valid) => {
-          console.log(valid);
           if(valid) {
             axios.post('/api/login', {
               name: this.loginForm.name,
