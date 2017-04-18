@@ -7,10 +7,10 @@ export function handleAuthFail(err) {
     message: err.data.errMessage
   });  
 
-  if(err.status == 401) {
-    let logout = mapMutations(["logoutSuccess"]).logoutSuccess
+  if(err.status == "401") {
+
     setTimeout(() => {
-      logout();
+      this.$store.commit("logoutSuccess");
       sessionStorage.removeItem("token");
       this.$router.push({path: '/login'});
     }, 2000);    
