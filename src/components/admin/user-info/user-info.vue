@@ -6,13 +6,13 @@
     <div class="router-box-body">
       <el-button type="primary" style="margin-bottom: 10px;" @click="addUser">添加</el-button>
       <el-table :data="currentPageData" border style="width: 100%;" class="table">
-        <el-table-column prop="name" label="用户名" ></el-table-column>
-        <el-table-column prop="displayName" label="显示名称"></el-table-column>
-        <el-table-column prop="email" label="邮箱"></el-table-column>
+        <el-table-column prop="name" label="用户名" width="150"></el-table-column>
+        <el-table-column prop="displayName" label="显示名称" width="200"></el-table-column>
+        <el-table-column prop="email" label="邮箱" width="350"></el-table-column>
         <el-table-column prop="role" label="角色"></el-table-column>
         <el-table-column prop="birthday" label="生日">
           <template scope="scope">
-            {{ scope.row.birthday.slice(0, 10)}}
+            {{ new Date(scope.row.birthday).toLocaleDateString() }}
           </template>
         </el-table-column>                
         <el-table-column  label="操作">
@@ -147,7 +147,9 @@
     },
     methods: {
       editRow(index, row) {
-
+        this.dialogType = "EDIT";
+        this.currentEditedData = JSON.parse(JSON.stringify(row));//深拷贝
+        this.dialogVisible = true;
       },
       deleteRow(index, row) {
         this.$confirm("此操作将删除该用户，是否继续？", "警告", {
@@ -193,6 +195,7 @@
       },
       updateUser() {
         if(this.dialogType == "EDIT") {
+          this.currentEditedData.birthday = new Date(this.currentEditedData.birthday);//需要将其转为Date类型，否则校验无法通过
           this.$refs["dialogForm"].validate((valid) => {
             if(valid) {
               axios.put("/api/admin/user", this.currentEditedData, {
@@ -208,12 +211,12 @@
                             }
                         })
                 }).then((res) => {
-                  this.giftData = res.data;
-                  this.dataNum = this.giftData.length;
+                  this.userData = res.data;
+                  this.dataNum = this.userData.length;
 
                   let start = (this.currentPage - 1) * 10;
                   let end = start + 10;
-                  this.currentPageData = this.giftData.slice(start, end);
+                  this.currentPageData = this.userData.slice(start, end);
 
                   this.$notify.success({
                     title: "成功",
@@ -231,6 +234,7 @@
         } else if(this.dialogType == "ADD") {
           this.$refs["dialogForm"].validate((valid) => {
             if(valid) {
+              // console.log(this.currentEditedData);
               axios.post("/api/admin/user", this.currentEditedData, {
                 headers: {
                   "x-access-token": sessionStorage.getItem("token")
@@ -244,12 +248,12 @@
                             }
                         })
                 }).then((res) => {
-                  this.giftData = res.data;
-                  this.dataNum = this.giftData.length;
+                  this.userData = res.data;
+                  this.dataNum = this.userData.length;
 
                   let start = (this.currentPage - 1) * 10;
                   let end = start + 10;
-                  this.currentPageData = this.giftData.slice(start, end);
+                  this.currentPageData = this.userData.slice(start, end);
 
                   this.$notify.success({
                     title: "成功",
@@ -262,8 +266,7 @@
                 });
             }
           });
-        }
-        
+        }        
       },
       pageChange() {
 
