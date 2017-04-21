@@ -32,14 +32,14 @@
           <el-input v-model="currentEditedData._id" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="用户名:" prop="name">
-          <el-input v-model="currentEditedData.name"></el-input>
-        </el-form-item>
-        <el-form-item label="默认密码:" prop="psw" v-if="dialogType == 'ADD'">
-          <el-input v-model="currentEditedData.psw" :disabled="true"></el-input>
+          <el-input v-model="currentEditedData.name" style="width: 7`0%"></el-input>
         </el-form-item>
         <el-form-item label="显示名称:" prop="displayName">
           <el-input v-model="currentEditedData.displayName"></el-input>
         </el-form-item>
+        <el-form-item label="默认密码:" prop="psw" v-if="dialogType == 'ADD'">
+          <el-input v-model="currentEditedData.psw" :disabled="true"></el-input>
+        </el-form-item>        
         <el-form-item label="邮箱:" prop="email">
           <el-input v-model="currentEditedData.email"></el-input>
         </el-form-item>
@@ -78,6 +78,50 @@
 
         return cb();
       };
+      let checkName = (rule, value, cb) => {
+        if(!value) {
+          return cb(new Error("用户名不能为空"));
+        } else {
+          axios.get("/api/admin/name-repetition", {
+            headers: {
+              "x-access-token": sessionStorage.getItem("token")
+            },
+            params: {
+              name: value,
+              type: "name"
+            }
+          })
+            .then((res) => {
+              if(res.data.repetition) {
+                cb(new Error("用户名已存在"));
+              } else {
+                cb();
+              }
+            });
+        }
+      };
+      let checkDisplayName = (rule, value, cb) => {
+        if(!value) {
+          return cb(new Error("显示名称不能为空"));
+        } else {
+          axios.get("/api/admin/name-repetition", {
+            headers: {
+              "x-access-token": sessionStorage.getItem("token")
+            },
+            params: {
+              name: value,
+              type: "displayName"
+            }
+          })
+            .then((res) => {
+              if(res.data.repetition) {
+                cb(new Error("显示名称已存在"));
+              } else {
+                cb();
+              }
+            });
+        }
+      }
 
       return {
         currentPageData: [],
@@ -93,10 +137,10 @@
             { required: true }
           ],
           name: [
-            { required: true, type: 'string', message: "用户名不能为空", trigger: "blur" }
+            { required: true, validator: checkName, trigger: "blur" }
           ],
           displayName: [
-            { required: true, type: 'string', message: "显示名称不能为空", trigger: "blur" }
+            { required: true, validator: checkDisplayName, trigger: "blur" }
           ],
           psw: [
             { required: true }
