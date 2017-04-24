@@ -2,7 +2,8 @@
   <div id="app">
     <div id="bg"><img src="./assets/img/bg.jpg" alt=""></div>
     <header v-if="isLogin">
-      <navbar-admin></navbar-admin>
+      <navbar-admin v-if="userInfo.role == 'admin'"></navbar-admin>
+      <navbar-normal v-if="userInfo.role == 'normal'"></navbar-normal>
     </header>
     <router-view></router-view>
   </div>
@@ -11,6 +12,7 @@
 <script>
   import Login from './components/login/login.vue'
   import NavbarAdmin from './components/utils/navbar/navbar-admin.vue'
+  import NavbarNormal from './components/utils/navbar/navbar-normal.vue'
 
   import { mapGetters } from 'vuex'
 
@@ -23,10 +25,14 @@
     computed: {
       ...mapGetters({
         isLogin: 'getLoginState'
+      }),
+      ...mapGetters({
+        userInfo: 'getAccountInfo'
       })
     },
     components: {
-      NavbarAdmin    
+      NavbarAdmin,
+      NavbarNormal    
     }
   }
 </script>

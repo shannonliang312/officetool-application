@@ -58,7 +58,13 @@
                 sessionStorage.setItem("token", res.data.token);
                 this.setAccountInfo(res.data.payload);
                 this.loginSuccess();
-                this.$router.push({path: '/admin/users-info'});
+                
+                if(res.data.payload.role == "admin") {
+                  this.$router.push({path: '/admin/users-info'});
+                } else {
+                  this.$router.push({path: '/normal/user-gifts-info'});
+                }
+                
               })
               .catch((err) => {
                 if(err.response) {
