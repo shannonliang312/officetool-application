@@ -1,5 +1,5 @@
 const UserInfo = resolve => require(['../user-info'], resolve);
 
 export default [
-  { path: "/admin/users-info", component: UserInfo, meta: { requireAdmin: "true" }  }
+  { path: "/admin/users-info", component: UserInfo, meta: { requireAdmin: true }  }
 ]
