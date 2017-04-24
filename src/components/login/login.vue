@@ -62,7 +62,7 @@
                 if(res.data.payload.role == "admin") {
                   this.$router.push({path: '/admin/users-info'});
                 } else {
-                  this.$router.push({path: '/normal/user-gifts-info'});
+                  this.$router.push({path: '/normal/user-tools-info'});
                 }
                 
               })
