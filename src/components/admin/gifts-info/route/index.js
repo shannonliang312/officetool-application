@@ -1,5 +1,5 @@
 const GiftsInfo = resolve => require(['../gifts-info'], resolve);
 
 export default [
-  { path: "/admin/gifts-info", component: GiftsInfo  }
+  { path: "/admin/gifts-info", component: GiftsInfo,meta: { requireAdmin: "true" }  }
 ]
