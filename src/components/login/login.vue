@@ -68,7 +68,7 @@
               })
               .catch((err) => {
                 if(err.response) {
-                  this.errMessage = err.response.data.message;
+                  this.errMessage = err.response.data.errMessage;
                   this.errFlag = true;
                 }
               });
@@ -109,7 +109,7 @@
     display: block;
     padding: 5px 8px;
     width: 80%;
-    margin-top: 30px;
+    margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
     background-color: transparent;
